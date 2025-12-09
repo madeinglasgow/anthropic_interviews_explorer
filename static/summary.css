@@ -1,0 +1,148 @@
+.dashboard-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #eee;
+}
+
+.dashboard-header h1 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 0;
+}
+
+.header-meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.header-meta span {
+    font-size: 14px;
+    color: #666;
+}
+
+.nav-link {
+    font-size: 14px;
+    font-weight: 500;
+    color: #fd4a61;
+    text-decoration: none;
+    padding: 8px 16px;
+    border: 1px solid #fd4a61;
+    border-radius: 6px;
+    transition: all 0.15s ease;
+}
+
+.nav-link:hover {
+    background: #fd4a61;
+    color: white;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.chart-card,
+.content-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    padding: 20px;
+}
+
+.chart-card h3,
+.content-card h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 0 0 16px 0;
+}
+
+.chart-card.wide,
+.content-card.wide {
+    grid-column: span 2;
+}
+
+.chart-card canvas {
+    max-height: 300px;
+}
+
+/* Sample content styling */
+.sample-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.sample-item {
+    background: #fde8eb;
+    border: 1px solid rgba(253, 74, 97, 0.2);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #1a1a1a;
+}
+
+.tag-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tag {
+    background: #fde8eb;
+    border: 1px solid rgba(253, 74, 97, 0.2);
+    border-radius: 16px;
+    padding: 6px 12px;
+    font-size: 13px;
+    color: #1a1a1a;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    .dashboard-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .chart-card.wide,
+    .content-card.wide {
+        grid-column: span 2;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .chart-card.wide,
+    .content-card.wide {
+        grid-column: span 1;
+    }
+
+    .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+}
+
+/* Loading state */
+.loading-message {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+    font-size: 14px;
+}

@@ -202,7 +202,24 @@ body {
 
 .nav-right {
     display: flex;
-    gap: 8px;
+    align-items: center;
+    gap: 12px;
+}
+
+.nav-link {
+    font-size: 13px;
+    font-weight: 500;
+    color: #fd4a61;
+    text-decoration: none;
+    padding: 8px 12px;
+    border: 1px solid #fd4a61;
+    border-radius: 6px;
+    transition: all 0.15s ease;
+}
+
+.nav-link:hover {
+    background: #fd4a61;
+    color: white;
 }
 
 .nav-btn {

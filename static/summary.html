@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview Insights Dashboard</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <link rel="stylesheet" href="/static/summary.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <h1>Interview Insights Dashboard</h1>
+            <div class="header-meta">
+                <span id="total-count">Loading...</span>
+                <a href="/" class="nav-link">View Transcripts</a>
+            </div>
+        </header>
+
+        <div class="dashboard-grid">
+            <!-- Row 1: Distribution charts -->
+            <div class="chart-card">
+                <h3>Sentiment Distribution</h3>
+                <canvas id="sentiment-chart"></canvas>
+            </div>
+
+            <div class="chart-card">
+                <h3>Experience Level</h3>
+                <canvas id="experience-chart"></canvas>
+            </div>
+
+            <div class="chart-card">
+                <h3>Participant Split</h3>
+                <canvas id="split-chart"></canvas>
+            </div>
+
+            <!-- Row 2: Top 10 bar charts -->
+            <div class="chart-card wide">
+                <h3>Top 10 Industries</h3>
+                <canvas id="industries-chart"></canvas>
+            </div>
+
+            <div class="chart-card wide">
+                <h3>Top 10 AI Tools Mentioned</h3>
+                <canvas id="tools-chart"></canvas>
+            </div>
+
+            <!-- Row 3: Use cases and pain points -->
+            <div class="chart-card wide">
+                <h3>Top 10 Use Cases</h3>
+                <canvas id="use-cases-chart"></canvas>
+            </div>
+
+            <div class="chart-card wide">
+                <h3>Top 10 Pain Points</h3>
+                <canvas id="pain-points-chart"></canvas>
+            </div>
+
+            <!-- Row 4: Cross-tabulations -->
+            <div class="chart-card wide">
+                <h3>Sentiment by Participant Type</h3>
+                <canvas id="sentiment-by-split-chart"></canvas>
+            </div>
+
+            <div class="chart-card wide">
+                <h3>Sentiment by Experience Level</h3>
+                <canvas id="sentiment-by-experience-chart"></canvas>
+            </div>
+
+            <!-- Row 5: Sample content -->
+            <div class="content-card wide">
+                <h3>Sample Recent Projects</h3>
+                <div id="sample-projects" class="sample-list"></div>
+            </div>
+
+            <div class="content-card">
+                <h3>Sample Job Titles</h3>
+                <div id="sample-jobs" class="tag-cloud"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/summary.js"></script>
+</body>
+</html>
