@@ -8,6 +8,7 @@ const navInfo = document.getElementById('nav-info');
 const prevBtn = document.getElementById('prev-btn');
 const nextBtn = document.getElementById('next-btn');
 const splitFilter = document.getElementById('split-filter');
+const chatNumberInput = document.getElementById('chat-number-input');
 const summaryPanel = document.getElementById('summary-panel');
 const scrollIndicator = document.getElementById('scroll-indicator');
 
@@ -125,6 +126,10 @@ function updateNavigation() {
 
     prevBtn.disabled = currentIndex <= 0;
     nextBtn.disabled = currentIndex >= total - 1;
+
+    // Update chat number input to reflect current position
+    chatNumberInput.value = total > 0 ? currentIndex + 1 : '';
+    chatNumberInput.max = total;
 }
 
 async function showTranscript(index) {
@@ -176,6 +181,18 @@ nextBtn.addEventListener('click', () => {
 
 splitFilter.addEventListener('change', (e) => {
     filterBySplit(e.target.value);
+});
+
+chatNumberInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        const value = parseInt(chatNumberInput.value, 10);
+        if (!isNaN(value) && filteredTranscripts.length > 0) {
+            // Clamp to valid range
+            const clamped = Math.max(1, Math.min(value, filteredTranscripts.length));
+            showTranscript(clamped - 1);
+        }
+        chatNumberInput.blur();
+    }
 });
 
 summaryPanel.addEventListener('scroll', updateScrollIndicator);
