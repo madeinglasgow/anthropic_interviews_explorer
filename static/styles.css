@@ -18,7 +18,10 @@ body {
 
 .app-container {
     width: 100%;
-    max-width: 500px;
+    max-width: 1000px;
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
 }
 
 .chat-widget {
@@ -30,6 +33,8 @@ body {
     flex-direction: column;
     height: 80vh;
     max-height: 700px;
+    flex: 1;
+    min-width: 400px;
 }
 
 .chat-header {
@@ -228,4 +233,69 @@ body {
 
 .nav-btn svg {
     flex-shrink: 0;
+}
+
+/* Summary Panel */
+.summary-panel {
+    width: 320px;
+    flex-shrink: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-content: flex-start;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.summary-panel::-webkit-scrollbar {
+    width: 6px;
+}
+
+.summary-panel::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.summary-panel::-webkit-scrollbar-thumb {
+    background: #ddd;
+    border-radius: 3px;
+}
+
+.summary-card {
+    background: #fde8eb;
+    border: 1px solid rgba(253, 74, 97, 0.2);
+    border-radius: 8px;
+    padding: 12px 14px;
+    width: 100%;
+}
+
+.summary-card.half {
+    width: calc(50% - 6px);
+}
+
+.card-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.card-value {
+    font-size: 14px;
+    color: #1a1a1a;
+    line-height: 1.4;
+}
+
+.card-value ul {
+    margin: 0;
+    padding-left: 16px;
+}
+
+.card-value li {
+    margin-bottom: 2px;
+}
+
+.card-value li:last-child {
+    margin-bottom: 0;
 }

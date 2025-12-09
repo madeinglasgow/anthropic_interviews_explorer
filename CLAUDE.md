@@ -14,6 +14,11 @@ python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 
+# One-time extraction (requires ANTHROPIC_API_KEY in .env)
+python extract.py              # Extract all 1,250 transcripts
+python extract.py --limit 10   # Test with first 10
+python extract.py --resume     # Resume from checkpoint if interrupted
+
 # Run development server
 uvicorn main:app --reload
 
@@ -22,19 +27,21 @@ uvicorn main:app --reload
 
 ## Architecture
 
-**Backend** (`main.py`): FastAPI server that loads the full dataset into memory on startup. Parses raw transcript text into structured messages using regex to split on "AI:" and "User:" markers.
+**Data extraction** (`extract.py`): One-time script that downloads dataset from Hugging Face, uses Claude API to extract structured fields (job title, sentiment, industry, etc.), saves to `data/transcripts.json`.
+
+**Backend** (`main.py`): FastAPI server that loads pre-extracted data from `data/transcripts.json` into memory on startup.
 
 **Frontend** (`static/`): Vanilla HTML/CSS/JS chat viewer styled to mimic DeepLearning.ai chatbot UI with Geist font.
 
-**Data flow**: Dataset loads from Hugging Face → parsed into `transcripts_data` dict → served via REST API → rendered as chat bubbles in browser.
+**Data flow**: HuggingFace → extract.py (one-time) → data/transcripts.json → main.py → REST API → browser
 
 ## API Endpoints
 
 - `GET /api/transcripts?split=<workforce|creatives|scientists>` - List transcript metadata
-- `GET /api/transcript/{transcript_id}` - Get single parsed transcript with messages array
+- `GET /api/transcript/{transcript_id}` - Get single transcript with messages and extracted fields
 
 ## Dataset
 
 - Source: `Anthropic/AnthropicInterviewer` on Hugging Face
 - Splits: workforce (1,000), creatives (125), scientists (125)
-- Fields: `transcript_id`, `text`, `split`
+- Extracted fields: job_title, experience_level, sentiment, ai_tools_mentioned, industry, primary_use_cases, key_pain_points, last_project_summary

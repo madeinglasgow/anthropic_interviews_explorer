@@ -1,3 +1,5 @@
 fastapi
 uvicorn[standard]
 datasets
+anthropic
+python-dotenv

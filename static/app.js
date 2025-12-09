@@ -8,6 +8,7 @@ const navInfo = document.getElementById('nav-info');
 const prevBtn = document.getElementById('prev-btn');
 const nextBtn = document.getElementById('next-btn');
 const splitFilter = document.getElementById('split-filter');
+const summaryPanel = document.getElementById('summary-panel');
 
 async function loadTranscripts(split = '') {
     const url = split ? `/api/transcripts?split=${split}` : '/api/transcripts';
@@ -44,6 +45,55 @@ function renderMessages(messages) {
     chatContainer.scrollTop = 0;
 }
 
+const FIELD_CONFIG = [
+    { key: 'job_title', label: 'Job Title', half: true },
+    { key: 'industry', label: 'Industry', half: true },
+    { key: 'experience_level', label: 'Experience Level', half: true },
+    { key: 'sentiment', label: 'Sentiment', half: true },
+    { key: 'ai_tools_mentioned', label: 'AI Tools Mentioned', list: true },
+    { key: 'primary_use_cases', label: 'Primary Use Cases', list: true },
+    { key: 'key_pain_points', label: 'Key Pain Points', list: true },
+    { key: 'last_project_summary', label: 'Last Project Summary' },
+];
+
+function renderSummaryCards(transcript) {
+    summaryPanel.innerHTML = '';
+
+    for (const field of FIELD_CONFIG) {
+        const value = transcript[field.key];
+
+        if (!value || (Array.isArray(value) && value.length === 0)) {
+            continue;
+        }
+
+        const card = document.createElement('div');
+        card.className = `summary-card${field.half ? ' half' : ''}`;
+
+        const label = document.createElement('div');
+        label.className = 'card-label';
+        label.textContent = field.label;
+
+        const valueDiv = document.createElement('div');
+        valueDiv.className = 'card-value';
+
+        if (field.list && Array.isArray(value)) {
+            const ul = document.createElement('ul');
+            for (const item of value) {
+                const li = document.createElement('li');
+                li.textContent = item;
+                ul.appendChild(li);
+            }
+            valueDiv.appendChild(ul);
+        } else {
+            valueDiv.textContent = value;
+        }
+
+        card.appendChild(label);
+        card.appendChild(valueDiv);
+        summaryPanel.appendChild(card);
+    }
+}
+
 function updateNavigation() {
     const total = filteredTranscripts.length;
     navInfo.textContent = total > 0 ? `${currentIndex + 1} / ${total}` : '0 / 0';
@@ -59,11 +109,13 @@ async function showTranscript(index) {
     const transcriptInfo = filteredTranscripts[index];
 
     chatContainer.innerHTML = '<div class="loading">Loading...</div>';
+    summaryPanel.innerHTML = '<div class="loading">Loading summary...</div>';
 
     const transcript = await loadTranscript(transcriptInfo.transcript_id);
 
     metadata.textContent = `${transcript.transcript_id} | ${transcript.split}`;
     renderMessages(transcript.messages);
+    renderSummaryCards(transcript);
     updateNavigation();
 }
 

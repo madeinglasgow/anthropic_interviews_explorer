@@ -1,29 +1,12 @@
-import re
+import json
 from contextlib import asynccontextmanager
+from pathlib import Path
 
-from datasets import load_dataset
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
-
-def parse_transcript(text: str) -> list[dict]:
-    """Parse transcript into list of {role, content} messages."""
-    messages = []
-    parts = re.split(r"(AI:|User:)", text)
-
-    current_role = None
-    for part in parts:
-        part = part.strip()
-        if part == "AI:":
-            current_role = "ai"
-        elif part == "User:":
-            current_role = "user"
-        elif current_role and part:
-            messages.append({"role": current_role, "content": part})
-
-    return messages
-
+DATA_FILE = Path("data/transcripts.json")
 
 transcripts_data = {}
 transcript_ids = []
@@ -33,17 +16,18 @@ transcript_ids = []
 async def lifespan(app: FastAPI):
     global transcripts_data, transcript_ids
 
-    print("Loading dataset from Hugging Face...")
-    dataset = load_dataset("Anthropic/AnthropicInterviewer")
+    if not DATA_FILE.exists():
+        raise RuntimeError(
+            f"{DATA_FILE} not found. Run 'python extract.py' first to generate the data."
+        )
 
-    for split_name in dataset.keys():
-        for item in dataset[split_name]:
-            transcript_id = item["transcript_id"]
-            transcripts_data[transcript_id] = {
-                "transcript_id": transcript_id,
-                "split": split_name,
-                "messages": parse_transcript(item["text"]),
-            }
+    print(f"Loading transcripts from {DATA_FILE}...")
+    with open(DATA_FILE) as f:
+        data = json.load(f)
+
+    for transcript in data["transcripts"]:
+        transcript_id = transcript["transcript_id"]
+        transcripts_data[transcript_id] = transcript
 
     transcript_ids = sorted(transcripts_data.keys())
     print(f"Loaded {len(transcript_ids)} transcripts")
@@ -66,6 +50,9 @@ async def list_transcripts(split: str | None = None):
                     "transcript_id": tid,
                     "split": data["split"],
                     "message_count": len(data["messages"]),
+                    "job_title": data.get("job_title"),
+                    "industry": data.get("industry"),
+                    "sentiment": data.get("sentiment"),
                 }
             )
     return {"transcripts": results, "total": len(results)}
