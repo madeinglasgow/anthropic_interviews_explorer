@@ -80,12 +80,14 @@ async def get_summary():
         if sentiment and sentiment != "UNKNOWN":
             sentiment_counts[sentiment.lower()] += 1
 
-    # Experience level counts (normalize case)
+    # Experience level counts (normalize case, include UNKNOWN)
     experience_counts = Counter()
     for t in transcripts:
         exp = t.get("experience_level", "UNKNOWN")
-        if exp and exp != "UNKNOWN":
+        if exp:
             experience_counts[exp.lower()] += 1
+        else:
+            experience_counts["unknown"] += 1
 
     # Split counts
     split_counts = Counter(t["split"] for t in transcripts)
@@ -131,13 +133,13 @@ async def get_summary():
         if sentiment and sentiment != "UNKNOWN":
             sentiment_by_split[t["split"]][sentiment.lower()] += 1
 
-    # Sentiment by experience level (normalize case)
+    # Sentiment by experience level (normalize case, include UNKNOWN)
     sentiment_by_experience = {}
     for t in transcripts:
         exp = t.get("experience_level", "UNKNOWN")
         sentiment = t.get("sentiment", "UNKNOWN")
-        if exp and exp != "UNKNOWN" and sentiment and sentiment != "UNKNOWN":
-            exp_lower = exp.lower()
+        if sentiment and sentiment != "UNKNOWN":
+            exp_lower = exp.lower() if exp else "unknown"
             if exp_lower not in sentiment_by_experience:
                 sentiment_by_experience[exp_lower] = Counter()
             sentiment_by_experience[exp_lower][sentiment.lower()] += 1

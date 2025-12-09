@@ -69,6 +69,42 @@
     margin: 0 0 16px 0;
 }
 
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.card-header h3 {
+    margin: 0;
+}
+
+.refresh-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 6px 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: white;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.refresh-btn:hover {
+    border-color: #fd4a61;
+    color: #fd4a61;
+}
+
+.refresh-btn svg {
+    flex-shrink: 0;
+}
+
 .chart-card.wide,
 .content-card.wide {
     grid-column: span 2;

@@ -68,12 +68,14 @@ uvicorn main:app --reload
 - Coral accent color (#fd4a61) for branding
 - Summary cards use light coral background (#fde8eb)
 - Summary panel uses scroll indicator button instead of scrollbar (arrow changes direction based on scroll position)
+- Transcript viewer includes "View chat #" input for direct navigation to any transcript
+- Dashboard includes shuffle buttons on sample content cards to load random samples
 
 ## Data Normalization
 
 The `/api/summary` endpoint applies Python-based case normalization:
 - Sentiment: lowercased (positive, negative, neutral, mixed)
-- Experience level: lowercased (senior, mid-career, entry-level, executive)
+- Experience level: lowercased, includes "unknown" for missing values (senior, mid-career, entry-level, executive, unknown)
 - Industry: title-cased for display consistency
 
 Optional LLM normalization (`normalize.py`) maps free-text fields to standard categories for cleaner aggregation.

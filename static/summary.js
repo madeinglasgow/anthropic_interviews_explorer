@@ -275,6 +275,16 @@ function renderSampleJobs(data) {
     }
 }
 
+async function refreshSampleProjects() {
+    const data = await fetchSummary();
+    renderSampleProjects(data);
+}
+
+async function refreshSampleJobs() {
+    const data = await fetchSummary();
+    renderSampleJobs(data);
+}
+
 async function init() {
     try {
         const data = await fetchSummary();
@@ -297,6 +307,10 @@ async function init() {
         // Render sample content
         renderSampleProjects(data);
         renderSampleJobs(data);
+
+        // Add shuffle button handlers
+        document.getElementById('refresh-projects').addEventListener('click', refreshSampleProjects);
+        document.getElementById('refresh-jobs').addEventListener('click', refreshSampleJobs);
 
     } catch (error) {
         console.error('Failed to load summary data:', error);
