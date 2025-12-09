@@ -73,29 +73,30 @@ async def get_summary():
     """Get aggregated statistics for the dashboard."""
     transcripts = list(transcripts_data.values())
 
-    # Sentiment counts
+    # Sentiment counts (normalize case)
     sentiment_counts = Counter()
     for t in transcripts:
         sentiment = t.get("sentiment", "UNKNOWN")
         if sentiment and sentiment != "UNKNOWN":
-            sentiment_counts[sentiment] += 1
+            sentiment_counts[sentiment.lower()] += 1
 
-    # Experience level counts
+    # Experience level counts (normalize case)
     experience_counts = Counter()
     for t in transcripts:
         exp = t.get("experience_level", "UNKNOWN")
         if exp and exp != "UNKNOWN":
-            experience_counts[exp] += 1
+            experience_counts[exp.lower()] += 1
 
     # Split counts
     split_counts = Counter(t["split"] for t in transcripts)
 
-    # Top industries (use normalized if available, fallback to raw)
+    # Top industries (use normalized if available, fallback to raw with title case)
     industry_counts = Counter()
     for t in transcripts:
         industry = t.get("industry_normalized") or t.get("industry", "UNKNOWN")
         if industry and industry != "UNKNOWN":
-            industry_counts[industry] += 1
+            # Title case for consistency
+            industry_counts[industry.title()] += 1
 
     # Top AI tools (flatten list field)
     tool_counts = Counter()
@@ -121,24 +122,25 @@ async def get_summary():
             if point and point != "UNKNOWN":
                 pain_point_counts[point] += 1
 
-    # Sentiment by split
+    # Sentiment by split (normalize case)
     sentiment_by_split = {}
     for split in ["workforce", "creatives", "scientists"]:
         sentiment_by_split[split] = Counter()
     for t in transcripts:
         sentiment = t.get("sentiment", "UNKNOWN")
         if sentiment and sentiment != "UNKNOWN":
-            sentiment_by_split[t["split"]][sentiment] += 1
+            sentiment_by_split[t["split"]][sentiment.lower()] += 1
 
-    # Sentiment by experience level
+    # Sentiment by experience level (normalize case)
     sentiment_by_experience = {}
     for t in transcripts:
         exp = t.get("experience_level", "UNKNOWN")
         sentiment = t.get("sentiment", "UNKNOWN")
         if exp and exp != "UNKNOWN" and sentiment and sentiment != "UNKNOWN":
-            if exp not in sentiment_by_experience:
-                sentiment_by_experience[exp] = Counter()
-            sentiment_by_experience[exp][sentiment] += 1
+            exp_lower = exp.lower()
+            if exp_lower not in sentiment_by_experience:
+                sentiment_by_experience[exp_lower] = Counter()
+            sentiment_by_experience[exp_lower][sentiment.lower()] += 1
 
     # Sample projects
     projects = [

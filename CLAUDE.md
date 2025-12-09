@@ -67,3 +67,13 @@ uvicorn main:app --reload
 - Geist font family
 - Coral accent color (#fd4a61) for branding
 - Summary cards use light coral background (#fde8eb)
+- Summary panel uses scroll indicator button instead of scrollbar (arrow changes direction based on scroll position)
+
+## Data Normalization
+
+The `/api/summary` endpoint applies Python-based case normalization:
+- Sentiment: lowercased (positive, negative, neutral, mixed)
+- Experience level: lowercased (senior, mid-career, entry-level, executive)
+- Industry: title-cased for display consistency
+
+Optional LLM normalization (`normalize.py`) maps free-text fields to standard categories for cleaner aggregation.
