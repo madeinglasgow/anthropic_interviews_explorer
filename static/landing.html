@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anthropic Interviewer Dataset Explorer</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <link rel="stylesheet" href="/static/landing.css">
+</head>
+<body>
+    <div class="landing-container">
+        <header class="landing-header">
+            <h1>Anthropic Interviewer Dataset Explorer</h1>
+            <p class="subtitle">Explore 1,250 AI-conducted interviews about how professionals use AI in their work</p>
+        </header>
+
+        <section class="about-section">
+            <h2>About the Dataset</h2>
+            <p>
+                The <a href="https://www.anthropic.com/research/anthropic-interviewer" target="_blank">Anthropic Interviewer</a>
+                is an AI-powered tool that conducts automated interviews at scale while maintaining user privacy.
+                Anthropic publicly released all interview data from their initial test (with participant consent)
+                for researchers to explore.
+            </p>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">1,250</div>
+                    <div class="stat-label">Total Interviews</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">1,000</div>
+                    <div class="stat-label">General Workforce</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">125</div>
+                    <div class="stat-label">Scientists</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">125</div>
+                    <div class="stat-label">Creatives</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="explore-section">
+            <h2>Explore the Data</h2>
+
+            <div class="action-cards">
+                <a href="/viewer" class="action-card">
+                    <div class="action-icon">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                    </div>
+                    <h3>View Transcripts</h3>
+                    <p>Read through individual interview conversations with extracted metadata and AI-generated summaries.</p>
+                </a>
+
+                <a href="/summary" class="action-card">
+                    <div class="action-icon">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <line x1="18" y1="20" x2="18" y2="10"></line>
+                            <line x1="12" y1="20" x2="12" y2="4"></line>
+                            <line x1="6" y1="20" x2="6" y2="14"></line>
+                        </svg>
+                    </div>
+                    <h3>View Insights</h3>
+                    <p>Explore aggregated statistics, sentiment analysis, and trends across all 1,250 interviews.</p>
+                </a>
+            </div>
+
+            <div class="enhancements-box">
+                <h3>What This Explorer Adds</h3>
+                <p>
+                    The original Anthropic dataset contains raw interview transcripts. This explorer enhances the data with
+                    AI-extracted metadata for each interview, including:
+                </p>
+                <ul>
+                    <li><strong>Job title</strong> and <strong>industry</strong> of the participant</li>
+                    <li><strong>Experience level</strong> (entry-level, mid-career, senior, executive)</li>
+                    <li><strong>Overall sentiment</strong> toward AI tools</li>
+                    <li><strong>AI tools mentioned</strong> during the interview</li>
+                    <li><strong>Primary use cases</strong> for AI in their work</li>
+                    <li><strong>Key pain points</strong> and challenges with AI</li>
+                    <li><strong>Project summaries</strong> describing recent AI-assisted work</li>
+                </ul>
+                <p>
+                    These extracted fields are normalized into standard categories, enabling aggregated analysis
+                    and visualization across all 1,250 interviews.
+                </p>
+            </div>
+        </section>
+
+        <section class="findings-section">
+            <h2>Key Findings</h2>
+            <div class="findings-grid">
+                <div class="finding-card">
+                    <h3>General Workforce</h3>
+                    <ul>
+                        <li><strong>86%</strong> reported time savings</li>
+                        <li><strong>65%</strong> expressed satisfaction with AI's workplace role</li>
+                        <li><strong>69%</strong> mentioned social stigma around AI use</li>
+                    </ul>
+                </div>
+                <div class="finding-card">
+                    <h3>Creatives</h3>
+                    <ul>
+                        <li><strong>97%</strong> reported time savings</li>
+                        <li><strong>68%</strong> noted quality improvements</li>
+                        <li><strong>70%</strong> managed peer judgment concerns</li>
+                    </ul>
+                </div>
+                <div class="finding-card">
+                    <h3>Scientists</h3>
+                    <ul>
+                        <li><strong>91%</strong> wanted more AI assistance</li>
+                        <li><strong>79%</strong> cited reliability concerns</li>
+                        <li>Use confined to writing and coding tasks</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <footer class="landing-footer">
+            <p>
+                Data source: <a href="https://huggingface.co/datasets/Anthropic/AnthropicInterviewer" target="_blank">Anthropic/AnthropicInterviewer</a> on Hugging Face
+            </p>
+            <p>
+                Learn more: <a href="https://www.anthropic.com/research/anthropic-interviewer" target="_blank">Anthropic Research Blog</a>
+            </p>
+        </footer>
+    </div>
+</body>
+</html>

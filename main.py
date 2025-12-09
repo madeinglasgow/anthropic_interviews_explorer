@@ -194,6 +194,11 @@ async def get_summary():
 
 @app.get("/")
 async def root():
+    return FileResponse("static/landing.html")
+
+
+@app.get("/viewer")
+async def viewer_page():
     return FileResponse("static/index.html")
 
 

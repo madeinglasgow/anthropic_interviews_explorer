@@ -1,0 +1,262 @@
+.landing-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.landing-header {
+    text-align: center;
+    margin-bottom: 48px;
+}
+
+.landing-header h1 {
+    font-size: 32px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 0 0 12px 0;
+}
+
+.landing-header .subtitle {
+    font-size: 18px;
+    color: #666;
+    margin: 0;
+}
+
+.about-section,
+.findings-section,
+.explore-section {
+    margin-bottom: 48px;
+}
+
+.about-section h2,
+.findings-section h2,
+.explore-section h2 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 0 0 16px 0;
+}
+
+.about-section p,
+.explore-section p {
+    font-size: 15px;
+    line-height: 1.7;
+    color: #444;
+    margin: 0 0 24px 0;
+}
+
+.about-section a {
+    color: #fd4a61;
+    text-decoration: none;
+}
+
+.about-section a:hover {
+    text-decoration: underline;
+}
+
+/* Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+.stat-card {
+    background: #fde8eb;
+    border: 1px solid rgba(253, 74, 97, 0.2);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 32px;
+    font-weight: 600;
+    color: #fd4a61;
+    margin-bottom: 4px;
+}
+
+.stat-label {
+    font-size: 13px;
+    color: #666;
+}
+
+/* Findings Grid */
+.findings-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.finding-card {
+    background: white;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.finding-card h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 0 0 12px 0;
+}
+
+.finding-card ul {
+    margin: 0;
+    padding-left: 18px;
+}
+
+.finding-card li {
+    font-size: 14px;
+    color: #444;
+    line-height: 1.6;
+    margin-bottom: 6px;
+}
+
+.finding-card li:last-child {
+    margin-bottom: 0;
+}
+
+.finding-card strong {
+    color: #fd4a61;
+}
+
+/* Enhancements Box */
+.enhancements-box {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    padding: 24px;
+    margin-top: 24px;
+}
+
+.enhancements-box h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 0 0 12px 0;
+}
+
+.enhancements-box p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #444;
+    margin: 0 0 16px 0;
+}
+
+.enhancements-box p:last-child {
+    margin-bottom: 0;
+}
+
+.enhancements-box ul {
+    margin: 0 0 16px 0;
+    padding-left: 20px;
+}
+
+.enhancements-box li {
+    font-size: 14px;
+    color: #444;
+    line-height: 1.6;
+    margin-bottom: 6px;
+}
+
+.enhancements-box li:last-child {
+    margin-bottom: 0;
+}
+
+.enhancements-box strong {
+    color: #1a1a1a;
+}
+
+/* Action Cards */
+.action-cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.action-card {
+    display: block;
+    background: white;
+    border: 2px solid #eee;
+    border-radius: 12px;
+    padding: 32px 24px;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.action-card:hover {
+    border-color: #fd4a61;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(253, 74, 97, 0.15);
+}
+
+.action-icon {
+    margin-bottom: 16px;
+    color: #fd4a61;
+}
+
+.action-card h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 0 0 8px 0;
+}
+
+.action-card p {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Footer */
+.landing-footer {
+    text-align: center;
+    padding-top: 32px;
+    border-top: 1px solid #eee;
+}
+
+.landing-footer p {
+    font-size: 13px;
+    color: #666;
+    margin: 0 0 8px 0;
+}
+
+.landing-footer p:last-child {
+    margin-bottom: 0;
+}
+
+.landing-footer a {
+    color: #fd4a61;
+    text-decoration: none;
+}
+
+.landing-footer a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .findings-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .action-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .landing-header h1 {
+        font-size: 24px;
+    }
+
+    .landing-header .subtitle {
+        font-size: 16px;
+    }
+}
