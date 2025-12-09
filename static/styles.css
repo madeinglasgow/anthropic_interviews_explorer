@@ -253,28 +253,65 @@ body {
 }
 
 /* Summary Panel */
-.summary-panel {
+.summary-panel-wrapper {
     width: 320px;
     flex-shrink: 0;
+    position: relative;
+    max-height: 80vh;
+}
+
+.summary-panel {
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
     align-content: flex-start;
     max-height: 80vh;
     overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: 48px;
 }
 
 .summary-panel::-webkit-scrollbar {
-    width: 6px;
+    display: none;
 }
 
-.summary-panel::-webkit-scrollbar-track {
-    background: transparent;
+.scroll-indicator {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(253, 74, 97, 0.9);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
-.summary-panel::-webkit-scrollbar-thumb {
-    background: #ddd;
-    border-radius: 3px;
+.scroll-indicator:hover {
+    background: #fd4a61;
+    transform: translateX(-50%) scale(1.1);
+}
+
+.scroll-indicator svg {
+    width: 16px;
+    height: 16px;
+    stroke: white;
+    transition: transform 0.2s ease;
+}
+
+.scroll-indicator.up svg {
+    transform: rotate(180deg);
+}
+
+.scroll-indicator.hidden {
+    display: none;
 }
 
 .summary-card {

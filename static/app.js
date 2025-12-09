@@ -9,6 +9,7 @@ const prevBtn = document.getElementById('prev-btn');
 const nextBtn = document.getElementById('next-btn');
 const splitFilter = document.getElementById('split-filter');
 const summaryPanel = document.getElementById('summary-panel');
+const scrollIndicator = document.getElementById('scroll-indicator');
 
 async function loadTranscripts(split = '') {
     const url = split ? `/api/transcripts?split=${split}` : '/api/transcripts';
@@ -92,6 +93,30 @@ function renderSummaryCards(transcript) {
         card.appendChild(valueDiv);
         summaryPanel.appendChild(card);
     }
+
+    // Reset scroll position and update indicator
+    summaryPanel.scrollTop = 0;
+    updateScrollIndicator();
+}
+
+function updateScrollIndicator() {
+    const hasOverflow = summaryPanel.scrollHeight > summaryPanel.clientHeight;
+
+    if (!hasOverflow) {
+        scrollIndicator.classList.add('hidden');
+        return;
+    }
+
+    scrollIndicator.classList.remove('hidden');
+
+    // Check if scrolled to bottom (with small threshold for rounding)
+    const isAtBottom = summaryPanel.scrollTop + summaryPanel.clientHeight >= summaryPanel.scrollHeight - 5;
+
+    if (isAtBottom) {
+        scrollIndicator.classList.add('up');
+    } else {
+        scrollIndicator.classList.remove('up');
+    }
 }
 
 function updateNavigation() {
@@ -151,6 +176,17 @@ nextBtn.addEventListener('click', () => {
 
 splitFilter.addEventListener('change', (e) => {
     filterBySplit(e.target.value);
+});
+
+summaryPanel.addEventListener('scroll', updateScrollIndicator);
+
+scrollIndicator.addEventListener('click', () => {
+    const isUp = scrollIndicator.classList.contains('up');
+    if (isUp) {
+        summaryPanel.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+        summaryPanel.scrollTo({ top: summaryPanel.scrollHeight, behavior: 'smooth' });
+    }
 });
 
 async function init() {
