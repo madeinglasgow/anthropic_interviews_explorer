@@ -1,22 +1,51 @@
 import json
+import os
 import random
 from collections import Counter
 from contextlib import asynccontextmanager
 from pathlib import Path
+from typing import Optional
 
+import numpy as np
+import voyageai
+from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
+
+load_dotenv()
 
 DATA_FILE = Path("data/transcripts.json")
+EMBEDDINGS_FILE = Path("data/embeddings.json")
 
 transcripts_data = {}
 transcript_ids = []
+embeddings_data = {}
+embedding_model = ""
+embedding_dimension = 0
+
+# Lazy-loaded Voyage client
+_vo_client = None
+
+
+def get_voyage_client():
+    global _vo_client
+    if _vo_client is None:
+        _vo_client = voyageai.Client()
+    return _vo_client
+
+
+def cosine_similarity(a: list[float], b: list[float]) -> float:
+    """Compute cosine similarity between two vectors."""
+    a_arr = np.array(a)
+    b_arr = np.array(b)
+    return float(np.dot(a_arr, b_arr) / (np.linalg.norm(a_arr) * np.linalg.norm(b_arr)))
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global transcripts_data, transcript_ids
+    global transcripts_data, transcript_ids, embeddings_data, embedding_model, embedding_dimension
 
     if not DATA_FILE.exists():
         raise RuntimeError(
@@ -33,6 +62,20 @@ async def lifespan(app: FastAPI):
 
     transcript_ids = sorted(transcripts_data.keys())
     print(f"Loaded {len(transcript_ids)} transcripts")
+
+    # Load embeddings if available
+    if EMBEDDINGS_FILE.exists():
+        print(f"Loading embeddings from {EMBEDDINGS_FILE}...")
+        with open(EMBEDDINGS_FILE) as f:
+            emb_data = json.load(f)
+        embeddings_data = emb_data["embeddings"]
+        embedding_model = emb_data["model"]
+        embedding_dimension = emb_data["dimension"]
+        print(
+            f"Loaded {len(embeddings_data)} embeddings (model: {embedding_model}, dim: {embedding_dimension})"
+        )
+    else:
+        print("Warning: Embeddings file not found. Search will be disabled.")
 
     yield
 
@@ -192,6 +235,97 @@ async def get_summary():
     }
 
 
+class SearchRequest(BaseModel):
+    query: str
+    limit: int = 20
+    offset: int = 0
+    split: Optional[str] = None
+    sentiment: Optional[str] = None
+    industry: Optional[str] = None
+
+
+@app.post("/api/search")
+async def search_transcripts(request: SearchRequest):
+    """Semantic search across transcripts."""
+    if not embeddings_data:
+        raise HTTPException(
+            status_code=503, detail="Search not available - embeddings not loaded"
+        )
+
+    # Embed query
+    vo = get_voyage_client()
+    query_result = vo.embed(
+        texts=[request.query], model=embedding_model, input_type="query"
+    )
+    query_embedding = query_result.embeddings[0]
+
+    # Score all transcripts
+    scores = []
+    for tid, embedding in embeddings_data.items():
+        # Apply filters
+        transcript = transcripts_data.get(tid)
+        if not transcript:
+            continue
+        if request.split and transcript["split"] != request.split:
+            continue
+        if (
+            request.sentiment
+            and transcript.get("sentiment", "").lower() != request.sentiment.lower()
+        ):
+            continue
+        if (
+            request.industry
+            and request.industry.lower() not in transcript.get("industry", "").lower()
+        ):
+            continue
+
+        score = cosine_similarity(query_embedding, embedding)
+        scores.append((tid, score, transcript))
+
+    # Sort by score descending
+    scores.sort(key=lambda x: x[1], reverse=True)
+
+    # Paginate
+    total = len(scores)
+    paginated = scores[request.offset : request.offset + request.limit]
+
+    # Build results
+    results = []
+    for tid, score, transcript in paginated:
+        # Generate snippet from first few messages
+        messages = transcript.get("messages", [])
+        snippet_parts = []
+        char_count = 0
+        for msg in messages:
+            if char_count > 200:
+                break
+            snippet_parts.append(msg["content"][:100])
+            char_count += len(snippet_parts[-1])
+        snippet = " ... ".join(snippet_parts)[:250]
+        if len(snippet) == 250:
+            snippet += "..."
+
+        results.append(
+            {
+                "transcript_id": tid,
+                "score": round(score, 4),
+                "split": transcript["split"],
+                "job_title": transcript.get("job_title"),
+                "industry": transcript.get("industry"),
+                "sentiment": transcript.get("sentiment"),
+                "snippet": snippet,
+            }
+        )
+
+    return {
+        "query": request.query,
+        "total": total,
+        "offset": request.offset,
+        "limit": request.limit,
+        "results": results,
+    }
+
+
 @app.get("/")
 async def root():
     return FileResponse("static/landing.html")
@@ -205,6 +339,11 @@ async def viewer_page():
 @app.get("/summary")
 async def summary_page():
     return FileResponse("static/summary.html")
+
+
+@app.get("/search")
+async def search_page():
+    return FileResponse("static/search.html")
 
 
 app.mount("/static", StaticFiles(directory="static"), name="static")

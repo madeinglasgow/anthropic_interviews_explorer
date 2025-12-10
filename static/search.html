@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Interviews</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
+    <link rel="stylesheet" href="/static/search.css">
+</head>
+<body>
+    <div class="search-container">
+        <header class="search-header">
+            <h1>Search Interview Transcripts</h1>
+            <nav class="header-nav">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/viewer" class="nav-link">View Transcripts</a>
+                <a href="/summary" class="nav-link">View Insights</a>
+            </nav>
+        </header>
+
+        <div class="search-box">
+            <input type="text" id="search-input"
+                   placeholder="Search interviews... (e.g., 'using AI for code review', 'frustrated with hallucinations')"
+                   autocomplete="off">
+            <button id="search-btn" class="search-button">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                </svg>
+                Search
+            </button>
+        </div>
+
+        <div class="filters-row">
+            <select id="filter-split" class="filter-select">
+                <option value="">All participant types</option>
+                <option value="workforce">Workforce</option>
+                <option value="creatives">Creatives</option>
+                <option value="scientists">Scientists</option>
+            </select>
+            <select id="filter-sentiment" class="filter-select">
+                <option value="">All sentiments</option>
+                <option value="positive">Positive</option>
+                <option value="neutral">Neutral</option>
+                <option value="negative">Negative</option>
+                <option value="mixed">Mixed</option>
+            </select>
+            <input type="text" id="filter-industry" class="filter-input"
+                   placeholder="Filter by industry...">
+        </div>
+
+        <div class="results-info" id="results-info"></div>
+
+        <div class="results-container" id="results-container">
+            <div class="empty-state">
+                <p>Enter a search query to find relevant interviews</p>
+                <p class="hint">Try: "creative professionals using AI for brainstorming" or "concerns about AI replacing jobs"</p>
+            </div>
+        </div>
+
+        <div class="pagination" id="pagination"></div>
+    </div>
+
+    <script src="/static/search.js"></script>
+</body>
+</html>

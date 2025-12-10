@@ -210,6 +210,18 @@ async function init() {
     allTranscripts = await loadTranscripts();
     filteredTranscripts = [...allTranscripts];
 
+    // Check for deep link parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const targetId = urlParams.get('id');
+
+    if (targetId && filteredTranscripts.length > 0) {
+        const index = filteredTranscripts.findIndex(t => t.transcript_id === targetId);
+        if (index >= 0) {
+            await showTranscript(index);
+            return;
+        }
+    }
+
     if (filteredTranscripts.length > 0) {
         await showTranscript(0);
     }
