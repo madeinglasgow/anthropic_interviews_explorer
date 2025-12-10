@@ -24,6 +24,7 @@ transcript_ids = []
 embeddings_data = {}
 embedding_model = ""
 embedding_dimension = 0
+searchable_text = {}  # transcript_id -> lowercase full text for keyword matching
 
 # Lazy-loaded Voyage client
 _vo_client = None
@@ -43,9 +44,33 @@ def cosine_similarity(a: list[float], b: list[float]) -> float:
     return float(np.dot(a_arr, b_arr) / (np.linalg.norm(a_arr) * np.linalg.norm(b_arr)))
 
 
+def keyword_match(query: str, text: str) -> float:
+    """Return 1.0 if query appears in text (case-insensitive), 0.0 otherwise."""
+    return 1.0 if query.lower() in text else 0.0
+
+
+def build_searchable_text(transcript: dict) -> str:
+    """Build lowercase searchable text from transcript content and metadata."""
+    parts = []
+
+    # Add all message content
+    for msg in transcript.get("messages", []):
+        parts.append(msg.get("content", ""))
+
+    # Add metadata fields
+    parts.append(transcript.get("job_title", "") or "")
+    parts.append(transcript.get("industry", "") or "")
+    parts.append(" ".join(transcript.get("ai_tools_mentioned", []) or []))
+    parts.append(" ".join(transcript.get("primary_use_cases", []) or []))
+    parts.append(" ".join(transcript.get("key_pain_points", []) or []))
+    parts.append(transcript.get("last_project_summary", "") or "")
+
+    return " ".join(parts).lower()
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global transcripts_data, transcript_ids, embeddings_data, embedding_model, embedding_dimension
+    global transcripts_data, transcript_ids, embeddings_data, embedding_model, embedding_dimension, searchable_text
 
     if not DATA_FILE.exists():
         raise RuntimeError(
@@ -59,9 +84,11 @@ async def lifespan(app: FastAPI):
     for transcript in data["transcripts"]:
         transcript_id = transcript["transcript_id"]
         transcripts_data[transcript_id] = transcript
+        # Build searchable text index for keyword matching
+        searchable_text[transcript_id] = build_searchable_text(transcript)
 
     transcript_ids = sorted(transcripts_data.keys())
-    print(f"Loaded {len(transcript_ids)} transcripts")
+    print(f"Loaded {len(transcript_ids)} transcripts (with searchable text index)")
 
     # Load embeddings if available
     if EMBEDDINGS_FILE.exists():
@@ -246,20 +273,24 @@ class SearchRequest(BaseModel):
 
 @app.post("/api/search")
 async def search_transcripts(request: SearchRequest):
-    """Semantic search across transcripts."""
+    """Hybrid search across transcripts (keyword + semantic)."""
     if not embeddings_data:
         raise HTTPException(
             status_code=503, detail="Search not available - embeddings not loaded"
         )
 
-    # Embed query
+    # Embed query for semantic search
     vo = get_voyage_client()
     query_result = vo.embed(
         texts=[request.query], model=embedding_model, input_type="query"
     )
     query_embedding = query_result.embeddings[0]
 
-    # Score all transcripts
+    # Hybrid search weights
+    KEYWORD_WEIGHT = 0.3
+    SEMANTIC_WEIGHT = 0.7
+
+    # Score all transcripts using hybrid approach
     scores = []
     for tid, embedding in embeddings_data.items():
         # Apply filters
@@ -279,8 +310,12 @@ async def search_transcripts(request: SearchRequest):
         ):
             continue
 
-        score = cosine_similarity(query_embedding, embedding)
-        scores.append((tid, score, transcript))
+        # Compute hybrid score
+        semantic_score = cosine_similarity(query_embedding, embedding)
+        kw_score = keyword_match(request.query, searchable_text.get(tid, ""))
+        combined_score = (KEYWORD_WEIGHT * kw_score) + (SEMANTIC_WEIGHT * semantic_score)
+
+        scores.append((tid, combined_score, transcript))
 
     # Sort by score descending
     scores.sort(key=lambda x: x[1], reverse=True)

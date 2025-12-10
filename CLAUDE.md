@@ -28,6 +28,7 @@ uvicorn main:app --reload
 # Access locally:
 # - http://localhost:8000 (landing page)
 # - http://localhost:8000/viewer (transcript viewer)
+# - http://localhost:8000/search (semantic search)
 # - http://localhost:8000/summary (insights dashboard)
 
 # One-time extraction (requires ANTHROPIC_API_KEY in .env)
@@ -39,6 +40,12 @@ python extract.py --resume     # Resume from checkpoint if interrupted
 # Optional: Normalize fields for better dashboard aggregation
 python normalize.py            # Normalize free-text fields to categories
 python normalize.py --dry-run  # Preview unique values without normalizing
+
+# One-time embedding generation (requires VOYAGE_API_KEY in .env)
+# Note: Embeddings are already generated and committed to repo - only needed if regenerating
+python embed.py                # Embed all 1,250 transcripts
+python embed.py --limit 10     # Test with first 10
+python embed.py --resume       # Resume from checkpoint if interrupted
 ```
 
 ## Architecture
@@ -47,11 +54,14 @@ python normalize.py --dry-run  # Preview unique values without normalizing
 
 **Normalization** (`normalize.py`): Optional post-processing script that maps free-text extracted values to standard categories using Claude API. Adds normalized fields alongside raw fields for better dashboard aggregation.
 
-**Backend** (`main.py`): FastAPI server that loads pre-extracted data from `data/transcripts.json` into memory on startup. Serves both the transcript viewer and summary dashboard APIs.
+**Embedding generation** (`embed.py`): One-time script that generates Voyage AI embeddings for all transcripts. Composes embedding text from full transcript + metadata fields, saves to `data/embeddings.json`. Supports checkpoint/resume for interrupted runs.
+
+**Backend** (`main.py`): FastAPI server that loads pre-extracted data from `data/transcripts.json` and embeddings from `data/embeddings.json` into memory on startup. Serves the transcript viewer, search, and summary dashboard APIs.
 
 **Frontend** (`static/`):
 - `landing.html`, `landing.css` - Landing page with dataset overview and navigation
 - `index.html`, `app.js`, `styles.css` - Chat-style transcript viewer with summary cards panel
+- `search.html`, `search.js`, `search.css` - Semantic search page with filters and pagination
 - `summary.html`, `summary.js`, `summary.css` - Analytics dashboard with Chart.js visualizations
 
 **Data flow**: HuggingFace → extract.py (one-time) → data/transcripts.json → [normalize.py (optional)] → main.py → REST API → browser
@@ -60,12 +70,14 @@ python normalize.py --dry-run  # Preview unique values without normalizing
 
 - `GET /api/transcripts?split=<workforce|creatives|scientists>` - List transcript metadata
 - `GET /api/transcript/{transcript_id}` - Get single transcript with messages and extracted fields
+- `POST /api/search` - Semantic search with query, filters (split, sentiment, industry), pagination
 - `GET /api/summary` - Aggregated statistics for dashboard (sentiment counts, top industries, tools, use cases, pain points, cross-tabulations, sample content)
 
 ## Pages
 
 - `/` - Landing page with dataset context, key findings, and navigation
-- `/viewer` - Transcript viewer with chat display and summary cards
+- `/viewer` - Transcript viewer with chat display and summary cards (supports `?id=transcript_id` deep linking)
+- `/search` - Semantic search with natural language queries, filters, and clickable results
 - `/summary` - Analytics dashboard with Chart.js visualizations
 
 ## Dataset
@@ -84,6 +96,15 @@ python normalize.py --dry-run  # Preview unique values without normalizing
 - Summary panel uses scroll indicator button instead of scrollbar (arrow changes direction based on scroll position)
 - Transcript viewer includes "View chat #" input for direct navigation to any transcript
 - Dashboard includes shuffle buttons on sample content cards to load random samples
+- Search results show relevance scores as percentages, clickable cards link to viewer
+
+## Semantic Search
+
+- Uses Voyage AI embeddings (`voyage-3` model, 1024 dimensions)
+- Pre-computed transcript embeddings stored in `data/embeddings.json`
+- Query embeddings generated at runtime (requires `VOYAGE_API_KEY`)
+- Results ranked by cosine similarity, top 20 returned per page
+- Supports filtering by split, sentiment, and industry
 
 ## Data Normalization
 
