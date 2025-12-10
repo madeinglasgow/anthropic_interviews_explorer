@@ -6,6 +6,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Interactive viewer and analytics dashboard for the AnthropicInterviewer dataset (1,250 interview transcripts from Hugging Face). Displays AI-conducted interviews with professionals about their AI tool usage in a chat-style UI, plus aggregated insights via a Chart.js dashboard.
 
+**Status**: Complete and deployed to Render.
+
+## Deployment
+
+- **Production URL**: Deployed on Render as a single web service
+- **Deployment config**: `render.yaml` (Python 3.10, uvicorn)
+- **Auto-deploy**: Pushes to `main` branch trigger automatic redeployment
+
 ## Commands
 
 ```bash
@@ -14,7 +22,16 @@ python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 
+# Run development server
+uvicorn main:app --reload
+
+# Access locally:
+# - http://localhost:8000 (landing page)
+# - http://localhost:8000/viewer (transcript viewer)
+# - http://localhost:8000/summary (insights dashboard)
+
 # One-time extraction (requires ANTHROPIC_API_KEY in .env)
+# Note: Data is already extracted and committed to repo - only needed if regenerating
 python extract.py              # Extract all 1,250 transcripts
 python extract.py --limit 10   # Test with first 10
 python extract.py --resume     # Resume from checkpoint if interrupted
@@ -22,11 +39,6 @@ python extract.py --resume     # Resume from checkpoint if interrupted
 # Optional: Normalize fields for better dashboard aggregation
 python normalize.py            # Normalize free-text fields to categories
 python normalize.py --dry-run  # Preview unique values without normalizing
-
-# Run development server
-uvicorn main:app --reload
-
-# Access at http://localhost:8000 (viewer) or http://localhost:8000/summary (dashboard)
 ```
 
 ## Architecture
@@ -38,6 +50,7 @@ uvicorn main:app --reload
 **Backend** (`main.py`): FastAPI server that loads pre-extracted data from `data/transcripts.json` into memory on startup. Serves both the transcript viewer and summary dashboard APIs.
 
 **Frontend** (`static/`):
+- `landing.html`, `landing.css` - Landing page with dataset overview and navigation
 - `index.html`, `app.js`, `styles.css` - Chat-style transcript viewer with summary cards panel
 - `summary.html`, `summary.js`, `summary.css` - Analytics dashboard with Chart.js visualizations
 
@@ -51,7 +64,8 @@ uvicorn main:app --reload
 
 ## Pages
 
-- `/` - Transcript viewer with chat display and summary cards
+- `/` - Landing page with dataset context, key findings, and navigation
+- `/viewer` - Transcript viewer with chat display and summary cards
 - `/summary` - Analytics dashboard with Chart.js visualizations
 
 ## Dataset
